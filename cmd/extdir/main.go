@@ -17,7 +17,8 @@ var extCount = make(map[string]int)
 
 func walk(root string, info os.FileInfo, err error) error {
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "Error on path %s: %s\n", root, err)
+		return nil
 	}
 	if *flagPath {
 		fmt.Println(root)
@@ -39,11 +40,13 @@ var flagPath = flag.Bool("path", false, "Print full paths")
 func main() {
 	program = path.Base(os.Args[0])
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr,
+		output := flag.CommandLine.Output()
+		fmt.Fprintf(output,
 			"%s recurses a directory and reports file counts by extension.\n",
 			program)
-		fmt.Fprintf(os.Stderr, "Version %s\n", version)
-		fmt.Fprintf(os.Stderr, "Usage: %s PATH\n", program)
+		fmt.Fprintf(output, "Version %s\n", version)
+		fmt.Fprintf(output, "Usage: %s PATH\n", program)
+		fmt.Fprintf(output, "PATH is the directory to start the recurse.\n")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
@@ -96,7 +99,7 @@ func (p pairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
 func (p pairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 func printExtCount(counts map[string]int) {
-	fmt.Fprintf(os.Stderr, "File count: %d\n\n", fileCount)
+	fmt.Printf("File count: %d\n\n", fileCount)
 
 	ranked := rankByExtCount(counts)
 	fmt.Printf("%10s %s\n", "#", "extension")
