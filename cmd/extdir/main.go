@@ -1,4 +1,4 @@
-// Cammand extdir list the counts of files by extension.
+// extdir (extension directory) is a command that recurses a directory and reports file counts by extension.
 package main
 
 import (
@@ -19,6 +19,9 @@ func walk(root string, info os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
+	if *flagPath {
+		fmt.Println(root)
+	}
 	ext := filepath.Ext(root)
 	ext = strings.ToLower(ext)
 	extCount[ext]++
@@ -31,12 +34,13 @@ var program string
 var version = "0.1"
 
 var flagV = flag.Bool("version", false, "Print version and exit")
+var flagPath = flag.Bool("path", false, "Print full paths")
 
 func main() {
 	program = path.Base(os.Args[0])
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr,
-			"%s is a command that recurses a directory and reports file counts by extension.\n",
+			"%s recurses a directory and reports file counts by extension.\n",
 			program)
 		fmt.Fprintf(os.Stderr, "Version %s\n", version)
 		fmt.Fprintf(os.Stderr, "Usage: %s PATH\n", program)
@@ -66,13 +70,13 @@ func main() {
 }
 
 func markProgress() {
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 	for {
 		select {
 		case <-done:
-			fmt.Fprintf(os.Stderr, "Done!\n")
 			fmt.Fprintf(os.Stderr, "File count: %d\n", fileCount)
+			fmt.Fprintf(os.Stderr, "Done!\n")
 			return
 		case <-ticker.C:
 			fmt.Fprintf(os.Stderr, "Files count: %d\n", fileCount)
@@ -92,11 +96,13 @@ func (p pairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
 func (p pairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 func printExtCount(counts map[string]int) {
+	fmt.Fprintf(os.Stderr, "File count: %d\n\n", fileCount)
+
 	ranked := rankByExtCount(counts)
 	fmt.Printf("%10s %s\n", "#", "extension")
 
 	for _, pair := range ranked {
-		fmt.Printf("%4d %s\n", pair.Value, pair.Key)
+		fmt.Printf("%10d %s\n", pair.Value, pair.Key)
 	}
 }
 
