@@ -18,7 +18,7 @@ var extCount = make(map[string]int)
 func walk(root string, info os.FileInfo, err error) error {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error on path %s: %s\n", root, err)
-		return nil
+		// return nil
 	}
 	if *flagPath {
 		fmt.Println(root)
