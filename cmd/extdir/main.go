@@ -32,7 +32,7 @@ func walk(root string, info os.FileInfo, err error) error {
 
 var done = make(chan bool)
 var program string
-var version = "0.1"
+var version = "0.2"
 
 var flagV = flag.Bool("version", false, "Print version and exit")
 var flagPath = flag.Bool("path", false, "Print full paths")
