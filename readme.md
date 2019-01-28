@@ -1,7 +1,7 @@
 ```
 $ extdir -h
 extdir recurses a directory and reports file counts by extension.
-Version 0.1
+Version 0.2
 Usage: extdir PATH
 PATH is the directory to start the recurse.
   -path
